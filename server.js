@@ -17,10 +17,21 @@ cloudinary.config({
 })
 const app = express();
 const port = 3000;
+const allowedOrigins = [
+          "http://localhost:5173",
+          "http://localhost:3000",
+          "https://example.com",
+];
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-          origin:"http://localhost:5173",
+          origin: function (origin, callback) {
+                    if (allowedOrigins.includes(origin) || !origin) {
+                              callback(null, true);
+                    } else {
+                              callback(new Error('Not allowed by CORS'));
+                    }
+          },
           credentials: true
 }));
 
@@ -29,7 +40,7 @@ app.use('/api/products', productRoute);
 app.use('/api/users', userRoute);
 
 
-app.get('/', (req, res) =>{
+app.get('/', (req, res) => {
           res.send("hello");
 })
 
